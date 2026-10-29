@@ -1,5 +1,7 @@
 grafana:
   enabled: true
+  adminUser: admin
+  adminPassword: "12345678"
   persistence:
     enabled: false
   resources:
@@ -34,3 +36,7 @@ prometheusOperator:
     limits:
       cpu: 300m
       memory: 384Mi
+
+prometheus-node-exporter:
+  hostRootFsMount:
+    mountPropagation: None
