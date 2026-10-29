@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Source code is available in the Jenkins workspace'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running CI checks'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Build stage passed'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI pipeline passed!'
+        }
+        failure {
+            echo 'CI pipeline failed!'
+        }
+    }
+}
