@@ -1,4 +1,4 @@
-
+```groovy
 pipeline {
     agent any
 
@@ -26,7 +26,7 @@ pipeline {
             steps {
                 dir('k8s-course/ci-demo') {
                     sh '''
-                        mkdir -p reports 
+                        mkdir -p reports
                         .venv/bin/python -m pytest \
                             tests \
                             --junitxml=reports/results.xml \
@@ -61,8 +61,8 @@ pipeline {
                         set +x
                         set -eu
 
-                        IMAGE="$DOCKERHUB_USER/ci-demo:${BUILD_NUMBER}"
-                        docker tag "ci-demo:${BUILD_NUMBER}" "$IMAGE"
+                        IMAGE="${DOCKERHUB_USER}/ci-demo:${BUILD_NUMBER}"
+
                         export DOCKER_CONFIG="$(mktemp -d)"
                         trap 'docker logout >/dev/null 2>&1 || true; rm -rf "$DOCKER_CONFIG"' EXIT
 
@@ -70,7 +70,11 @@ pipeline {
                             --username "$DOCKERHUB_USER" \
                             --password-stdin
 
+                        docker tag "ci-demo:${BUILD_NUMBER}" "$IMAGE"
+
                         docker push "$IMAGE"
+
+                        echo "Successfully pushed: $IMAGE"
                     '''
                 }
             }
@@ -92,3 +96,4 @@ pipeline {
         }
     }
 }
+```
