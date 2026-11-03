@@ -13,9 +13,9 @@ pipeline {
             steps {
                 sh '''
                     python3 --version
-                    python3 -m venv ci-demo/.venv
-                    ci-demo/.venv/bin/python -m pip install --upgrade pip
-                    ci-demo/.venv/bin/python -m pip install -r ci-demo/requirements.txt
+                    python3 -m venv k8s-course/ci-demo/.venv
+                    k8s-course/ci-demo/.venv/bin/python -m pip install --upgrade pip
+                    k8s-course/ci-demo/.venv/bin/python -m pip install -r k8s-course/ci-demo/requirements.txt
                 '''
             }
         }
@@ -23,10 +23,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    mkdir -p ci-demo/reports
-                    ci-demo/.venv/bin/python -m pytest \
-                        ci-demo/tests \
-                        --junitxml=ci-demo/reports/results.xml \
+                    mkdir -p k8s-course/ci-demo/reports
+                    k8s-course/ci-demo/.venv/bin/python -m pytest \
+                        k8s-course/ci-demo/tests \
+                        --junitxml=k8s-course/ci-demo/reports/results.xml \
                         -v
                 '''
             }
@@ -35,7 +35,7 @@ pipeline {
 
     post {
         always {
-            junit testResults: 'ci-demo/reports/*.xml',
+            junit testResults: 'k8s-course/ci-demo/reports/*.xml',
                   allowEmptyResults: true
         }
 
