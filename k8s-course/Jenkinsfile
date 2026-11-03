@@ -35,6 +35,18 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    docker build \
+                        -t ci-demo:${BUILD_NUMBER} \
+                        ./k8s-course/ci-demo
+
+                    docker images ci-demo
+                '''
+            }
+        }
     }
 
     post {
