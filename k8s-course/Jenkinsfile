@@ -11,24 +11,28 @@ pipeline {
 
         stage('Environment Setup') {
             steps {
-                sh '''
-                    python3 --version
-                    python3 -m venv k8s-course/ci-demo/.venv
-                    k8s-course/ci-demo/.venv/bin/python -m pip install --upgrade pip
-                    k8s-course/ci-demo/.venv/bin/python -m pip install -r k8s-course/ci-demo/requirements.txt
-                '''
+                dir('k8s-course/ci-demo') {
+                    sh '''
+                        python3 --version
+                        python3 -m venv .venv
+                        .venv/bin/python -m pip install --upgrade pip
+                        .venv/bin/python -m pip install -r requirements.txt
+                    '''
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '''
-                    mkdir -p k8s-course/ci-demo/reports
-                    k8s-course/ci-demo/.venv/bin/python -m pytest \
-                        k8s-course/ci-demo/tests \
-                        --junitxml=k8s-course/ci-demo/reports/results.xml \
-                        -v
-                '''
+                dir('k8s-course/ci-demo') {
+                    sh '''
+                        mkdir -p reports
+                        .venv/bin/python -m pytest \
+                            tests \
+                            --junitxml=reports/results.xml \
+                            -v
+                    '''
+                }
             }
         }
     }
