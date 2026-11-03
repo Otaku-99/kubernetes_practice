@@ -1,32 +1,50 @@
+
 pipeline {
     agent any
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Source code is available in the Jenkins workspace'
+                echo "Repository checked out by Jenkins"
             }
         }
 
-        stage('Test') {
+        stage('Environment Setup') {
             steps {
-                echo 'Running CI checks'
+                sh '''
+                    python3 --version
+                    python3 -m venv ci-demo/.venv
+                    ci-demo/.venv/bin/python -m pip install --upgrade pip
+                    ci-demo/.venv/bin/python -m pip install -r ci-demo/requirements.txt
+                '''
             }
         }
 
-        stage('Build') {
+        stage('Run Tests') {
             steps {
-                echo 'Build stage passed'
+                sh '''
+                    mkdir -p ci-demo/reports
+                    ci-demo/.venv/bin/python -m pytest \
+                        ci-demo/tests \
+                        --junitxml=ci-demo/reports/results.xml \
+                        -v
+                '''
             }
         }
     }
 
     post {
-        success {
-            echo 'CI pipeline passed!'
+        always {
+            junit testResults: 'ci-demo/reports/*.xml',
+                  allowEmptyResults: true
         }
+
+        success {
+            echo 'All CI stages completed successfully!'
+        }
+
         failure {
-            echo 'CI pipeline failed!'
+            echo 'CI pipeline failed. Check Console Output.'
         }
     }
 }
