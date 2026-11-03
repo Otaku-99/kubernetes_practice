@@ -1,1 +1,3 @@
-pytest
+pytestpytest
+fastapi
+uvicorn
