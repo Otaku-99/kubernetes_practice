@@ -82,7 +82,12 @@ pipeline {
                 }
             }
         }
+        
         stage('Deploy to Kubernetes') {
+            when {
+                branch 'main'
+            }
+
             steps {
                 withCredentials([
                     file(
@@ -91,12 +96,41 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                        kubectl version --client
-                        kubectl get deployments -n default
+                        set -eu
+
+                        IMAGE="otakugamie/ci-demo:${BUILD_NUMBER}"
+
+                        echo "Deploying image: $IMAGE"
+
+                        kubectl set image deployment/ci-demo \
+                            ci-demo="$IMAGE" \
+                            -n default
+
+                        echo "Waiting for rollout..."
+
+                        if ! kubectl rollout status deployment/ci-demo \
+                            -n default --timeout=180s; then
+
+                            echo "Deployment failed. Rolling back..."
+
+                            kubectl rollout undo deployment/ci-demo \
+                                -n default
+
+                            kubectl rollout status deployment/ci-demo \
+                                -n default --timeout=120s || true
+
+                            exit 1
+                        fi
+
+                        echo "Deployment completed successfully!"
+
+                        kubectl get pods -l app=ci-demo -n default
+                        kubectl get deployment ci-demo -n default
                     '''
                 }
             }
         }
+
     }
 
     post {
