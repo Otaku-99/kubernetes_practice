@@ -1,0 +1,35 @@
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ci-demo
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: ci-demo
+
+  template:
+    metadata:
+      labels:
+        app: ci-demo
+
+    spec:
+      containers:
+        - name: ci-demo
+          image: otakugamie/ci-demo:16
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8000
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
