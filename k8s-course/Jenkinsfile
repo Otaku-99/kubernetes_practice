@@ -92,7 +92,7 @@ pipeline {
                 ]) {
                     sh '''
                         kubectl version --client
-                        kubectl get nodes
+                        kubectl get deployments -n default
                     '''
                 }
             }
